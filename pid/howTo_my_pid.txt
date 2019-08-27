@@ -1,0 +1,18 @@
+Introducing a brief guide to particle identification using my macros.
+
+0. Copy all files to your workspace
+1. Prepare templates on at least 500000 events using MPDidTemplate.C (change paths to yours)
+2. Adjust created templates with MPDcreateTemplates.C
+3. Now everything is ready to be used in your analysis. All you have to do is include:
+    #include "MPDidentify.h"
+   and run function identify( Float_t _ptotal, Float_t _dedx, Float_t _m2, Float_t _beta, Int_t _charge) where:
+   _ptotal - total momentum
+   _dedx - dedx from TPC
+   _m2 - m^2 from ToF
+   _beta - beta from ToF
+   _charge - charge
+ Warning: This gives proper results asserting ToF was on. To check whether ToF was on use ToF flag:
+   if(track->GetTofFlag()!=6) continue;
+ Warning: This method does not return sign. Remember to check it via track->GetCharge();
+   
+ Example macro: MPDidDST.C
