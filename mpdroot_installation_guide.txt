@@ -1,0 +1,101 @@
+Disclaimer: I'm not an author of this guide, however, added/altered it in order to save your time.
+If something goes wrong it is recommended to reinstall everything from the very begining.
+
+How to install MpdRoot
+Before installing MpdRoot make sure that the following packages are installed on your system!
+
+Install packages needed for RedHat-based OS (eg, CentOS, Scientific Linux):
+$ sudo su 
+$ yum install subversion git make cmake gcc-gfortran gcc-c++ binutils file patch redhat-lsb-core libX11-devel libXmu-devel libXpm-devel libXft-devel libXext-devel mesa-libGLU-devel libxml2-devel expat-devel zlib-devel postgresql-devel mysql-devel openssl-devel curl-devel automake libtool fftw3-devel
+
+Install packages needed for Debian-based OS (eg, Ubuntu):
+$ sudo su 
+$ apt-get install subversion git make cmake g++ gcc gfortran binutils patch lsb-release libx11-dev libxmu-dev libxpm-dev libxft-dev libxext-dev dpkg-dev xlibmesa-glu-dev libglew-dev libxml2-dev libexpat1-dev zlib1g-dev libpqxx-dev libmysqlclient-dev libssl-dev libcurl4-openssl-dev automake libtool fftw3-dev
+
+Installing the external packages
+Set an installation path for the external packages, e.g. /home/YOUR_FOLDER
+NOTE: If you are installing FairSoft/FairRoot to a system directory like /opt, then switch user to superuser ‘root’ (“sudo su” command).
+EDIT: I had a lot of troubles while installing it in opt. In /home it should run smoothly
+
+$ export INSTALLATION_PATH=/home/YOUR_FOLDER
+$ cd $INSTALLATION_PATH
+
+Install the FairSoft package
+The May 2018 release of FairSoft can be downloaded from GitHub:
+
+$ git clone https://github.com/FairRootGroup/FairSoft.git fairsoft
+$ cd fairsoft
+$ git checkout may18p1
+
+Apply patch (to correct the ROOT bug concerned with PostgreSQL reading):
+
+$ wget http://se51-98.jinr.ru/data/fairsoft_may18p1.patch
+$ patch -p1 -i fairsoft_may18p1.patch
+
+Installing fairsoft:
+
+$ ./configure.sh
+# 1) GCC (on Linux)
+# 1) No Debug Info
+# 2) No (not install FairMQ Only)
+# 1) Yes (install Simulation engines and event generators)
+# 2) Internet (install G4 files from internet)
+# 2) No (not install the python bindings)
+# path: $INSTALLATION_PATH/fairsoft/install
+Follow the instructions on the screen. You can use options suggested above.
+
+Install the FairRoot environment
+The release of FairRoot (18.0.4) can be downloaded from GitHub:
+
+$ cd $INSTALLATION_PATH
+$ export SIMPATH=$INSTALLATION_PATH/fairsoft/install
+$ export PATH=$SIMPATH/bin:$PATH
+$ git clone https://github.com/FairRootGroup/FairRoot.git fairroot
+$ cd fairroot
+$ git checkout v18.0.4
+
+Apply patch (to correct FairMCApplication):
+
+$ wget http://se51-98.jinr.ru/data/fairroot_18_04.patch
+$ patch -p1 -i fairroot_18_04.patch
+
+Installing fairroot:
+
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_INSTALL_PREFIX="$INSTALLATION_PATH/fairroot/install" -DBUILD_EXAMPLES=OFF ..
+$ make
+$ make install
+
+Installing the main soft
+Go to the installation directory
+Go to the directory where you want to install the MpdRoot software, e. g. home directory:
+
+$ cd ~
+Clone GIT repository
+Clone GIT repository (dev – developer version) with HTTPS (read-only access, e.g. for unregistered users)
+$ git clone -b dev --recursive https://git.jinr.ru/nica/mpdroot.git
+
+Clone GIT repository (dev – developer version) with SSH (for developers)
+Register on JINR GitLab with @jinr.ru mail. Add SSH key (readme) to your profile to not enter the password every time you access.
+
+$ git clone -b dev --recursive git@git.jinr.ru:nica/mpdroot.git
+
+Installation procedure for MpdRoot:
+Configure:
+$ cd mpdroot
+$ mkdir build
+
+WARNING: By default, in the SetEnv.sh file SIMPATH points to /opt/fairsoft/install, and FAIRROOTPATH – /opt/fairroot/install directories. If you installed FairSoft or FairRoot to another directory, please, change SIMPATH and FAIRROOTPATH variables in the file (“export SIMPATH=[your FairSoft install path]” and “export FAIRROOTPATH=[your FairRoot install path]”).
+
+$ . SetEnv.sh
+$ cd build
+$ cmake ..
+
+Build the framework:
+$ make
+$ . config.sh
+Run “. config.sh” every time you run terminal to work with MpdRoot
+Update your local branch from origin branch:
+$ cd mpdroot
+$ git pull --recurse-submodules
