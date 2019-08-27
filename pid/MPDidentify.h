@@ -83,9 +83,10 @@ Int_t checkTemplate(Int_t id, Int_t &charge, Float_t x, Float_t y, Int_t tID ){
 	return 0;
 }
 
-Int_t identify( Int_t &_pbin, Float_t _ptotal, Float_t _dedx, Float_t _m2, Float_t _beta, Int_t _charge) {
+Int_t identify( Float_t _ptotal, Float_t _dedx, Float_t _m2, Float_t _beta, Int_t _charge) {
 	Int_t c[4][4]={0};
 	Int_t FLAG=1;
+    Int_t &_pbin;
 	//  Search for appropriate bin in p_total
 	for( Int_t i1=0; i1<NPBINS; ++i1){
 		if( _ptotal > 3 ){ 
